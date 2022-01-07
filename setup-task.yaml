@@ -1,0 +1,15 @@
+apiVersion: api/v1
+kind: Task
+name: resource_alloc
+inputs:
+- {name: spec, type: String}
+outputs:
+- {name: handle, type: String, valueFrom: /root/logs/}
+- {name: sdkserver_url, type: String, valueFrom: /root/sdkserver_url}
+metadata:
+implementation:
+  container:
+    image: hub.pingcap.net/qa/setup:latest
+    command:
+    - sh
+    - -exc

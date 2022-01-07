@@ -1,0 +1,106 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"tekton.dev/v1beta1","kind":"Task","metadata":{"annotations":{},"name":"systesting-upgrade-ops","namespace":"user-lt"},"spec":{"params":[{"name":"run-id","type":"string"},{"name":"target-version","type":"string"}],"steps":[{"image":"hub.pingcap.net/qa/kubetools:20200730","name":"generate-manifest","script":"#!/usr/bin/env bash\nkubectl patch tct $(params.run-id)  --type=json -p='[{\"op\": \"replace\", \"path\": \"/spec/tidbCluster/version/version\",\"value\":\"$(params.target-version)\"}]' \n"},{"image":"hub.pingcap.net/qa/kubetools:20200730","name":"wait-until-cluster-started","script":"#!/usr/bin/env bash\ncount=30\nwhile true\ndo\n  state=`kubectl get tct \"$(params.run-id)\" -ojsonpath='{.status.state}' || echo unknown`\n  echo \"current resource state: $state\"\n  if [ \"ready\" = \"$state\" ]; then\n      break\n  elif [ $count -lt 0 ]; then\n      break\n  fi\n  echo \"test resources isn't ready now, wait another 10s...\"\n  sleep 10\n  let \"count--\"\ndone\n"}],"workspaces":[{"mountPath":"/adhoc-manifests","name":"manifest"}]}}
+    pipeline.tekton.dev/release: v0.17.3
+  creationTimestamp: "2021-09-22T06:19:20Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/managed-by: tekton-pipelines
+    tekton.dev/pipeline: systesting
+    tekton.dev/pipelineRun: systesting-demo-sgqmc
+    tekton.dev/pipelineTask: upgrade
+    tekton.dev/task: systesting-upgrade-ops
+  name: systesting-demo-sgqmc-upgrade-nldpg
+  namespace: user-lt
+  ownerReferences:
+  - apiVersion: tekton.dev/v1beta1
+    blockOwnerDeletion: true
+    controller: true
+    kind: PipelineRun
+    name: systesting-demo-sgqmc
+    uid: 82a464e4-23c5-4ce8-901f-5927b1c53521
+  resourceVersion: "406868628"
+  selfLink: /apis/tekton.dev/v1beta1/namespaces/user-lt/taskruns/systesting-demo-sgqmc-upgrade-nldpg
+  uid: 2770fadf-b8db-4503-9434-07de3f5b0e07
+spec:
+  params:
+  - name: run-id
+    value: systesting-demo
+  - name: target-version
+    value: v5.1.2
+  resources: {}
+  serviceAccountName: system-testing
+  taskRef:
+    kind: Task
+    name: systesting-upgrade-ops
+  timeout: 2h0m0s
+  workspaces:
+  - emptyDir: {}
+    name: manifest
+status:
+  completionTime: "2021-09-22T06:24:15Z"
+  conditions:
+  - lastTransitionTime: "2021-09-22T06:24:15Z"
+    message: All Steps have completed executing
+    reason: Succeeded
+    status: "True"
+    type: Succeeded
+  podName: systesting-demo-sgqmc-upgrade-nldpg-pod-z7n2f
+  startTime: "2021-09-22T06:19:20Z"
+  steps:
+  - container: step-generate-manifest
+    imageID: docker-pullable://hub.pingcap.net/qa/kubetools@sha256:59210fd139a17bb37e52020edf50cf32d018d8c5a2211ff3321b2017db5e4927
+    name: generate-manifest
+    terminated:
+      containerID: docker://ebbe3430a6623d1300e3a20d53568c7937e74117213776586be1842c41517ba1
+      exitCode: 0
+      finishedAt: "2021-09-22T06:19:27Z"
+      reason: Completed
+      startedAt: "2021-09-22T06:19:27Z"
+  - container: step-wait-until-cluster-started
+    imageID: docker-pullable://hub.pingcap.net/qa/kubetools@sha256:59210fd139a17bb37e52020edf50cf32d018d8c5a2211ff3321b2017db5e4927
+    name: wait-until-cluster-started
+    terminated:
+      containerID: docker://ac2fccb11976ab074885ec2196bfe47e36c7383827fedc56292e8930604c2531
+      exitCode: 0
+      finishedAt: "2021-09-22T06:24:13Z"
+      reason: Completed
+      startedAt: "2021-09-22T06:19:28Z"
+  taskSpec:
+    params:
+    - name: run-id
+      type: string
+    - name: target-version
+      type: string
+    steps:
+    - image: hub.pingcap.net/qa/kubetools:20200730
+      name: generate-manifest
+      resources: {}
+      script: "#!/usr/bin/env bash\nkubectl patch tct $(params.run-id)  --type=json
+        -p='[{\"op\": \"replace\", \"path\": \"/spec/tidbCluster/version/version\",\"value\":\"$(params.target-version)\"}]'
+        \n"
+    - image: hub.pingcap.net/qa/kubetools:20200730
+      name: wait-until-cluster-started
+      resources: {}
+      script: |
+        #!/usr/bin/env bash
+        count=30
+        while true
+        do
+          state=`kubectl get tct "$(params.run-id)" -ojsonpath='{.status.state}' || echo unknown`
+          echo "current resource state: $state"
+          if [ "ready" = "$state" ]; then
+              break
+          elif [ $count -lt 0 ]; then
+              break
+          fi
+          echo "test resources isn't ready now, wait another 10s..."
+          sleep 10
+          let "count--"
+        done
+    workspaces:
+    - mountPath: /adhoc-manifests
+      name: manifest

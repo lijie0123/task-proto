@@ -1,0 +1,324 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  annotations:
+    testbed: testbed--tps-270275-1-992
+  creationTimestamp: "2021-12-30T05:34:14Z"
+  generation: 7
+  labels:
+    workflows.argoproj.io/completed: "true"
+    workflows.argoproj.io/phase: Succeeded
+    workflows.argoproj.io/workflow-archiving-status: Archived
+  name: plan-exec-270275
+  namespace: testground
+  resourceVersion: "544185990"
+  selfLink: /apis/argoproj.io/v1alpha1/namespaces/testground/workflows/plan-exec-270275
+  uid: 7c471764-68e6-4889-ae1c-c355bee5d943
+spec:
+  arguments: {}
+  artifactRepositoryRef:
+    configMap: artifact-repositories
+    key: default
+  entrypoint: plan-270048-1
+  onExit: teardown
+  podGC:
+    strategy: OnWorkflowSuccess
+  serviceAccountName: tipocket-runner
+  templates:
+  - container:
+      args:
+      - |-
+        total=1
+        allocated=1
+        iter=0
+        while true
+        do
+            printenv TESTBED_INPUT_SPEC | tcctl testbed create --wait-timeout=30m --output-spec="${TESTBED_OUTPUT_SPEC}" --credential="" -f - -r http://rms-staging.pingcap.net:30007
+            allocated=$?
+            iter=$(($iter + 1))
+            if [ $allocated = 0 ] || [ $iter -ge $total ]
+            then break
+            fi
+            sleepSeconds=$(( ( $RANDOM % 10 +  10 * $iter ) * 60 ))
+            echo sleep ${sleepSeconds}
+            sleep ${sleepSeconds}
+        done
+        if [ $allocated != 0 ]
+        then exit $allocated
+        fi
+      command:
+      - /bin/bash
+      - -c
+      env:
+      - name: TESTBED_INPUT_SPEC
+        value: '{"generateName":"testbed-","items":[{"name":"tc","spec":{"imagePullPolicy":"IfNotPresent","pd":{"image":"hub.pingcap.net/qa/pd:master","replicas":1},"tidb":{"image":"hub.pingcap.net/qa/tidb:master","replicas":1},"tikv":{"image":"hub.pingcap.net/qa/tikv:master","replicas":1}},"type":"TIDB_CLUSTER"},{"name":"go-tpc-workload","spec":{"container":{"command":["tail","-f","/dev/null"],"image":"hub.pingcap.net/qa/go-tpc:v1.0.7","name":"go-tpc","resources":{"requests":{"cpu":"1000m","memory":"64Mi"}}}},"type":"WORKLOAD_NODE"}],"meta":{"to":[{"name":"tipocket-runner","kind":"ServiceAccount","namespace":"testground"}],"accounting":{"name":"270275","kind":"ID","namespace":""}},"name":"testbed--tps-270275-1-992","physicalResourceRequest":{"cpu":{"core":2.25},"memory":{"byte":1946157056}},"reclaimPolicy":{"gcStrategy":{"onCompletion":{"artifact":{"log":true,"monitor":true},"reserveEnv":{"durationOnWorkingHour":"0h","scaleDown":false,"scaleIn":false}}},"lease":"24h"},"resourcePool":"default","rmsUrl":"http://rms-staging.pingcap.net:30007"}'
+      - name: TESTBED_OUTPUT_SPEC
+        value: '{"output":"/tmp/plan-270048-1/output","items":[{"name":"tc","path":"/tmp/plan-270048-1/items/tc"},{"name":"go-tpc-workload","path":"/tmp/plan-270048-1/items/go-tpc-workload"}]}'
+      - name: TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: token
+            name: rms-secret
+      image: hub.pingcap.net/qa/plansetup
+      imagePullPolicy: Always
+      name: ""
+      resources: {}
+    inputs: {}
+    metadata:
+      labels:
+        planID: "270048"
+        role: setUp
+        rootPlanExecID: "270275"
+    name: plan-270048-1-setup
+    outputs:
+      parameters:
+      - globalName: testbed-output
+        name: plan-270048-1-setup-output
+        valueFrom:
+          path: /tmp/plan-270048-1/output
+      - name: tc
+        valueFrom:
+          path: /tmp/plan-270048-1/items/tc
+      - name: go-tpc-workload
+        valueFrom:
+          path: /tmp/plan-270048-1/items/go-tpc-workload
+  - container:
+      args:
+      - "\nif [ {{workflow.status}} = \"Succeeded\" ]; then\n\ttcctl testbed complete
+        $(printenv TESTBED_SETUP_OUTPUT | jq '.name' -r) --type Success  -r http://rms-staging.pingcap.net:30007\nelse\n\ttcctl
+        testbed complete $(printenv TESTBED_SETUP_OUTPUT | jq '.name' -r) --type Failure
+        \ -r http://rms-staging.pingcap.net:30007\nfi\n"
+      command:
+      - /bin/sh
+      - -c
+      env:
+      - name: TESTBED_SETUP_OUTPUT
+        value: '{"name":"testbed--tps-270275-1-992","items":[{"provider":"github.com/pingcap/test-infra/sdk/resource/impl/k8s.TiDBClusterClient","name":"tc","testbed":"testbed--tps-270275-1-992","type":"TIDB_CLUSTER","ready":true},{"provider":"github.com/pingcap/test-infra/sdk/resource/impl/k8s.WorkloadNodeClient","name":"go-tpc-workload","testbed":"testbed--tps-270275-1-992","type":"WORKLOAD_NODE","ready":true}],"lease":{"lease":"24h0m0s","expireDate":"2022/01/01
+          14:18:23.000 +08:00"}}'
+      - name: TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: token
+            name: rms-secret
+      image: hub.pingcap.net/qa/tcctl
+      imagePullPolicy: Always
+      name: ""
+      resources: {}
+    inputs: {}
+    metadata:
+      labels:
+        role: tearDown
+    name: teardown
+    outputs: {}
+  - container:
+      command:
+      - /bin/example
+      env:
+      - name: TI_ARCHIVE
+        value: /tmp/case-43-2
+      - name: TI_CASE_EXEC_ID
+        value: "300110"
+      - name: TI_OUTPUT
+        value: /tmp/case-43-2.out
+      - name: TI_PARAM_RES_tc
+        value: '{{inputs.parameters.tc}}'
+      image: hub.pingcap.net/qa/example_tidbcluster
+      imagePullPolicy: Always
+      name: ""
+      resources: {}
+      workingDir: /
+    inputs:
+      parameters:
+      - name: tc
+      - default: ""
+        name: case-43-2-timeout
+    metadata:
+      labels:
+        caseExecID: "300110"
+        caseID: "43"
+        role: case
+        rootPlanExecID: "270275"
+    name: case-43-2
+    outputs:
+      artifacts:
+      - name: archive
+        optional: true
+        path: /tmp/case-43-2
+      - archive:
+          none: {}
+        name: output
+        optional: true
+        path: /tmp/case-43-2.out
+    timeout: '{{inputs.parameters.case-43-2-timeout}}'
+  - dag:
+      failFast: false
+      target: test-infra-001
+      tasks:
+      - arguments: {}
+        name: plan-270048-1-setup
+        template: plan-270048-1-setup
+      - arguments:
+          parameters:
+          - name: tc
+            value: '{{tasks.plan-270048-1-setup.outputs.parameters.tc}}'
+        depends: plan-270048-1-setup
+        name: test-infra-001
+        template: case-43-2
+        when: '{{tasks.plan-270048-1-setup.exitCode}} == 0'
+    inputs: {}
+    metadata: {}
+    name: plan-270048-1
+    outputs: {}
+  ttlStrategy:
+    secondsAfterFailure: 604800
+    secondsAfterSuccess: 172800
+status:
+  artifactRepositoryRef:
+    artifactRepository:
+      archiveLogs: true
+      s3:
+        accessKeySecret:
+          key: accesskey
+          name: minio-cred
+        bucket: my-bucket
+        endpoint: minio.argo.svc.cluster.local:9000
+        insecure: true
+        keyFormat: '{{workflow.creationTimestamp.Y}}-{{workflow.creationTimestamp.m}}-{{workflow.creationTimestamp.d}}/{{workflow.name}}/{{pod.name}}'
+        secretKeySecret:
+          key: secretkey
+          name: minio-cred
+    configMap: artifact-repositories
+    key: default
+    namespace: testground
+  conditions:
+  - status: "False"
+    type: PodRunning
+  - status: "True"
+    type: Completed
+  finishedAt: "2021-12-31T06:27:39Z"
+  nodes:
+    plan-exec-270275:
+      children:
+      - plan-exec-270275-1275287131
+      displayName: plan-exec-270275
+      finishedAt: "2021-12-31T06:27:29Z"
+      id: plan-exec-270275
+      name: plan-exec-270275
+      outboundNodes:
+      - plan-exec-270275-2291315121
+      phase: Succeeded
+      progress: 2/2
+      resourcesDuration:
+        cpu: 1052
+        memory: 1052
+      startedAt: "2021-12-31T06:18:19Z"
+      templateName: plan-270048-1
+      templateScope: local/plan-exec-270275
+      type: DAG
+    plan-exec-270275-46464577:
+      displayName: plan-exec-270275.onExit
+      finishedAt: "2021-12-31T06:27:34Z"
+      id: plan-exec-270275-46464577
+      name: plan-exec-270275.onExit
+      outputs:
+        artifacts:
+        - name: main-logs
+          s3:
+            key: 2021-12-30/plan-exec-270275/plan-exec-270275-46464577/main.log
+        exitCode: "0"
+      phase: Succeeded
+      progress: 1/1
+      resourcesDuration:
+        cpu: 6
+        memory: 6
+      startedAt: "2021-12-31T06:27:29Z"
+      templateName: teardown
+      templateScope: local/plan-exec-270275
+      type: Pod
+    plan-exec-270275-1275287131:
+      boundaryID: plan-exec-270275
+      children:
+      - plan-exec-270275-2291315121
+      displayName: plan-270048-1-setup
+      finishedAt: "2021-12-31T06:21:26Z"
+      hostNodeName: 172.16.4.84
+      id: plan-exec-270275-1275287131
+      name: plan-exec-270275.plan-270048-1-setup
+      outputs:
+        artifacts:
+        - name: main-logs
+          s3:
+            key: 2021-12-30/plan-exec-270275/plan-exec-270275-1275287131/main.log
+        exitCode: "0"
+        parameters:
+        - globalName: testbed-output
+          name: plan-270048-1-setup-output
+          value: '{"name":"testbed--tps-270275-1-992","items":[{"provider":"github.com/pingcap/test-infra/sdk/resource/impl/k8s.TiDBClusterClient","name":"tc","testbed":"testbed--tps-270275-1-992","type":"TIDB_CLUSTER","ready":true},{"provider":"github.com/pingcap/test-infra/sdk/resource/impl/k8s.WorkloadNodeClient","name":"go-tpc-workload","testbed":"testbed--tps-270275-1-992","type":"WORKLOAD_NODE","ready":true}],"lease":{"lease":"24h0m0s","expireDate":"2022/01/01
+            14:18:23.000 +08:00"}}'
+          valueFrom:
+            path: /tmp/plan-270048-1/output
+        - name: tc
+          value: '{"provider":"github.com/pingcap/test-infra/sdk/resource/impl/k8s.TiDBClusterClient","name":"tc","testbed":"testbed--tps-270275-1-992","type":"TIDB_CLUSTER","ready":true}'
+          valueFrom:
+            path: /tmp/plan-270048-1/items/tc
+        - name: go-tpc-workload
+          value: '{"provider":"github.com/pingcap/test-infra/sdk/resource/impl/k8s.WorkloadNodeClient","name":"go-tpc-workload","testbed":"testbed--tps-270275-1-992","type":"WORKLOAD_NODE","ready":true}'
+          valueFrom:
+            path: /tmp/plan-270048-1/items/go-tpc-workload
+      phase: Succeeded
+      progress: 1/1
+      resourcesDuration:
+        cpu: 369
+        memory: 369
+      startedAt: "2021-12-31T06:18:19Z"
+      templateName: plan-270048-1-setup
+      templateScope: local/plan-exec-270275
+      type: Pod
+    plan-exec-270275-2291315121:
+      boundaryID: plan-exec-270275
+      displayName: test-infra-001
+      finishedAt: "2021-12-31T06:27:19Z"
+      hostNodeName: 172.16.4.84
+      id: plan-exec-270275-2291315121
+      inputs:
+        parameters:
+        - name: tc
+          value: '{"provider":"github.com/pingcap/test-infra/sdk/resource/impl/k8s.TiDBClusterClient","name":"tc","testbed":"testbed--tps-270275-1-992","type":"TIDB_CLUSTER","ready":true}'
+        - default: ""
+          name: case-43-2-timeout
+          value: ""
+      name: plan-exec-270275.test-infra-001
+      outputs:
+        artifacts:
+        - name: archive
+          optional: true
+          path: /tmp/case-43-2
+        - archive:
+            none: {}
+          name: output
+          optional: true
+          path: /tmp/case-43-2.out
+        - name: main-logs
+          s3:
+            key: 2021-12-30/plan-exec-270275/plan-exec-270275-2291315121/main.log
+        exitCode: "0"
+      phase: Succeeded
+      progress: 1/1
+      resourcesDuration:
+        cpu: 683
+        memory: 683
+      startedAt: "2021-12-31T06:21:36Z"
+      templateName: case-43-2
+      templateScope: local/plan-exec-270275
+      type: Pod
+  outputs:
+    parameters:
+    - name: testbed-output
+      value: '{"name":"testbed--tps-270275-1-992","items":[{"provider":"github.com/pingcap/test-infra/sdk/resource/impl/k8s.TiDBClusterClient","name":"tc","testbed":"testbed--tps-270275-1-992","type":"TIDB_CLUSTER","ready":true},{"provider":"github.com/pingcap/test-infra/sdk/resource/impl/k8s.WorkloadNodeClient","name":"go-tpc-workload","testbed":"testbed--tps-270275-1-992","type":"WORKLOAD_NODE","ready":true}],"lease":{"lease":"24h0m0s","expireDate":"2022/01/01
+        14:18:23.000 +08:00"}}'
+  phase: Succeeded
+  progress: 3/3
+  resourcesDuration:
+    cpu: 1058
+    memory: 1058
+  startedAt: "2021-12-31T06:18:19Z"

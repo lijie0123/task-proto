@@ -1,0 +1,113 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apiextensions.k8s.io/v1","kind":"CustomResourceDefinition","metadata":{"annotations":{},"labels":{"app.kubernetes.io/instance":"default","app.kubernetes.io/part-of":"tekton-pipelines","pipeline.tekton.dev/release":"v0.17.3","version":"v0.17.3"},"name":"taskruns.tekton.dev"},"spec":{"conversion":{"strategy":"Webhook","webhook":{"clientConfig":{"service":{"name":"tekton-pipelines-webhook","namespace":"tekton-pipelines"}},"conversionReviewVersions":["v1beta1"]}},"group":"tekton.dev","names":{"categories":["tekton","tekton-pipelines"],"kind":"TaskRun","plural":"taskruns","shortNames":["tr","trs"]},"preserveUnknownFields":false,"scope":"Namespaced","versions":[{"additionalPrinterColumns":[{"jsonPath":".status.conditions[?(@.type==\"Succeeded\")].status","name":"Succeeded","type":"string"},{"jsonPath":".status.conditions[?(@.type==\"Succeeded\")].reason","name":"Reason","type":"string"},{"jsonPath":".status.startTime","name":"StartTime","type":"date"},{"jsonPath":".status.completionTime","name":"CompletionTime","type":"date"}],"name":"v1alpha1","schema":{"openAPIV3Schema":{"type":"object","x-kubernetes-preserve-unknown-fields":true}},"served":true,"storage":false,"subresources":{"status":{}}},{"additionalPrinterColumns":[{"jsonPath":".status.conditions[?(@.type==\"Succeeded\")].status","name":"Succeeded","type":"string"},{"jsonPath":".status.conditions[?(@.type==\"Succeeded\")].reason","name":"Reason","type":"string"},{"jsonPath":".status.startTime","name":"StartTime","type":"date"},{"jsonPath":".status.completionTime","name":"CompletionTime","type":"date"}],"name":"v1beta1","schema":{"openAPIV3Schema":{"type":"object","x-kubernetes-preserve-unknown-fields":true}},"served":true,"storage":true,"subresources":{"status":{}}}]}}
+  creationTimestamp: "2021-01-19T14:29:51Z"
+  generation: 2
+  labels:
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+    pipeline.tekton.dev/release: v0.17.3
+    version: v0.17.3
+  name: taskruns.tekton.dev
+  resourceVersion: "553340"
+  selfLink: /apis/apiextensions.k8s.io/v1/customresourcedefinitions/taskruns.tekton.dev
+  uid: f7d5af18-5fdd-4b17-8723-9af5f67f0a73
+spec:
+  conversion:
+    strategy: Webhook
+    webhook:
+      clientConfig:
+        caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVLakNDQXhLZ0F3SUJBZ0lRSUJXaUY1UzU2c29ib285MHcydmRZREFOQmdrcWhraUc5dzBCQVFzRkFEQk8KTVJRd0VnWURWUVFLRXd0cmJtRjBhWFpsTG1SbGRqRTJNRFFHQTFVRUF4TXRkR1ZyZEc5dUxYQnBjR1ZzYVc1bApjeTEzWldKb2IyOXJMblJsYTNSdmJpMXdhWEJsYkdsdVpYTXVjM1pqTUI0WERUSXhNREV4T1RFME16QXhORm9YCkRUSXlNREV4T1RFME16QXhORm93VGpFVU1CSUdBMVVFQ2hNTGEyNWhkR2wyWlM1a1pYWXhOakEwQmdOVkJBTVQKTFhSbGEzUnZiaTF3YVhCbGJHbHVaWE10ZDJWaWFHOXZheTUwWld0MGIyNHRjR2x3Wld4cGJtVnpMbk4yWXpDQwpBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQUxXMnJCRTVXM1NMNlhvWCtDQ1RDR2pyCk5kMzZNR1AxK09MT1ZXL3N5VURxbkZ3V2dhRDBwNEVJdTliSThuUUlPM0ErRldXN21FbjhMSVRheFlwclJYUDkKeG5XQ2FuRlAwbEdHT21nUGEzMmNPcDRCMlVXdnJ3ZGl6VnloeTczRHZuRmZWRGlPUFBKbnA1eGorQVpHUnFqcwp2ejhQU1dES0pyek44QlVINGNxYkxNNEg2RUlnUHhNWHdNOFduV2hpN2tLamtFdUQvdXdvZE1rT0hPZ2loeEtlClRVT2I4Y09HZGFmdlFqOEEwYVZQdnFCWjZPNEd0ZjQ4aG5XcUR5ZHlyVFRMZTd4WTNIVGZPaHF3Z0N0dTRQSFEKMVFVY2ZyWGlrdFZyNFNwQTBweXhDL1c1UUZjek5CR0ZsdGVmVXQ1NnpNaXQwclFvYXUyK1liS1h0TENRN29jQwpBd0VBQWFPQ0FRSXdnZjh3RGdZRFZSMFBBUUgvQkFRREFnS0VNQjBHQTFVZEpRUVdNQlFHQ0NzR0FRVUZCd01CCkJnZ3JCZ0VGQlFjREFqQVBCZ05WSFJNQkFmOEVCVEFEQVFIL01JRzhCZ05WSFJFRWdiUXdnYkdDR0hSbGEzUnYKYmkxd2FYQmxiR2x1WlhNdGQyVmlhRzl2YTRJcGRHVnJkRzl1TFhCcGNHVnNhVzVsY3kxM1pXSm9iMjlyTG5SbAphM1J2Ymkxd2FYQmxiR2x1WlhPQ0xYUmxhM1J2Ymkxd2FYQmxiR2x1WlhNdGQyVmlhRzl2YXk1MFpXdDBiMjR0CmNHbHdaV3hwYm1WekxuTjJZNEk3ZEdWcmRHOXVMWEJwY0dWc2FXNWxjeTEzWldKb2IyOXJMblJsYTNSdmJpMXcKYVhCbGJHbHVaWE11YzNaakxtTnNkWE4wWlhJdWJHOWpZV3d3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUFsNApZZTBoZE0zekFSSHdoYm4xbm1vY1BwZ2IwVS9rWWJ0NTJUNmZoTHU5MkVaNWJzbUpDTDRVbHR5MFE4VUQwZk1BCm1oZ09EYnJQNWZZU1lRK2RtUkxVdFF5TkVqSmZDSGxpTUU1WHRzZFdreVEwczkyMXJkZ0JSQzZ4cU9VemhCWE4KWmJtMjJkMitaa2Z3bjBTaWF6eEljSENpRGRobGxacmJrcTZiTnVYdHUyZFYrOUtTcTNTNmJuNFJ4QnYzQmJKbgp2UXEzTmpZQ1dtRnNuaFdONHZ6eUdmQWQvYVIvU2svY3hqcDZ4Z284SUpQLzQ2MC9kRG5wV2h1UGpLaHQxVG9NCmpKV1V2TFFKMEFRL3pnNUkwUWFrdUZNdEdZUDVLRlZTM055N1k0bE5MUHJ0Vklzc2pCU3l1WnFWeUlpc25PcXgKaW43RU9uWDljRTdaZkczZ3U2VT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+        service:
+          name: tekton-pipelines-webhook
+          namespace: tekton-pipelines
+          path: /resource-conversion
+          port: 443
+      conversionReviewVersions:
+      - v1beta1
+  group: tekton.dev
+  names:
+    categories:
+    - tekton
+    - tekton-pipelines
+    kind: TaskRun
+    listKind: TaskRunList
+    plural: taskruns
+    shortNames:
+    - tr
+    - trs
+    singular: taskrun
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=="Succeeded")].status
+      name: Succeeded
+      type: string
+    - jsonPath: .status.conditions[?(@.type=="Succeeded")].reason
+      name: Reason
+      type: string
+    - jsonPath: .status.startTime
+      name: StartTime
+      type: date
+    - jsonPath: .status.completionTime
+      name: CompletionTime
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        type: object
+        x-kubernetes-preserve-unknown-fields: true
+    served: true
+    storage: false
+    subresources:
+      status: {}
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=="Succeeded")].status
+      name: Succeeded
+      type: string
+    - jsonPath: .status.conditions[?(@.type=="Succeeded")].reason
+      name: Reason
+      type: string
+    - jsonPath: .status.startTime
+      name: StartTime
+      type: date
+    - jsonPath: .status.completionTime
+      name: CompletionTime
+      type: date
+    name: v1beta1
+    schema:
+      openAPIV3Schema:
+        type: object
+        x-kubernetes-preserve-unknown-fields: true
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    categories:
+    - tekton
+    - tekton-pipelines
+    kind: TaskRun
+    listKind: TaskRunList
+    plural: taskruns
+    shortNames:
+    - tr
+    - trs
+    singular: taskrun
+  conditions:
+  - lastTransitionTime: "2021-01-19T14:29:51Z"
+    message: no conflicts found
+    reason: NoConflicts
+    status: "True"
+    type: NamesAccepted
+  - lastTransitionTime: "2021-01-19T14:29:51Z"
+    message: the initial names have been accepted
+    reason: InitialNamesAccepted
+    status: "True"
+    type: Established
+  storedVersions:
+  - v1beta1

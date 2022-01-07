@@ -1,0 +1,43 @@
+apiVersion: api/v1
+kind: Task
+name: pipeline-222
+inputs:
+- {name: dsn, type: String, default: mysql://host/db}
+- {name: sysbench, type: Resource}
+outputs:
+- {name: logs, type: Artifact, fromExpression: '{{steps.ts1.outputs.logs}}'}
+implementation:
+  steps:
+    # scheme from taskrun spec
+    - name: ts1
+      # taskRef or taskSpec
+      taskRef:
+        name: case-111
+      inputs:
+      - {name: dsn, value: '{{inputs.dsn}}'}
+      - {name: sysbench, value: "{{inputs.sysbench}}"}
+      timeout: '2h'
+    - name: ts2
+      taskSpec:
+        inputs:
+        - {name: dsn, type: String, default: "mysql://host/db"}
+        - {name: sysbench, type: Resource}
+        outputs:
+        - {name: logs, type: Artifact, valueFrom: /root/logs/}
+        metadata:
+        implementation:
+          container:
+            image: byrnedo/alpine-curl@sha256:548379d0a4a0c08b9e55d9d87a592b7d35d9ab3037f4936f5ccd09d0b625a342
+            command:
+            - sh
+            - -exc
+            - |
+              url="$0"
+              output_path="$1"
+              curl_options="$2"
+              mkdir -p "$(dirname "$output_path")"
+              curl --get "$url" --output "$output_path" $curl_options
+            - '{{inputs.dsn}}'
+      inputs:
+      - {name: upperCase, value: '{{steps.ts1.outputs.exitCode}}'}
+      timeout: '1h'
