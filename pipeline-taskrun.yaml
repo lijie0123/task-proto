@@ -52,7 +52,6 @@ spec:
 status:
   completionTime: "2021-09-22T06:24:15Z"
   startTime: "2021-09-22T06:19:20Z"
-  stopFlag: true
   phase: complete/running/pending
   complete: success/fail/error
   taskSpec: # from above  # todo whether render after inputs

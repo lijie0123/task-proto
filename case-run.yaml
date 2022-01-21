@@ -1,0 +1,74 @@
+apiVersion: 'api/v2'
+kind: CaseRun
+metadata:
+  name: case-111-run
+  generateName: case-111-
+  id: 1234
+  createTime: "2021-09-22T06:19:20Z"
+  createdBy: 1234
+  createdByDisply: "someone@pingcap.com"
+  updateTime: "2021-09-22T06:19:20Z"
+  updateBy: 1235
+  updateByDisply: "vvv"
+spec:
+  parent: suit-222-run
+  root: plan-run-xxx
+  # taskRef or casespec
+  caseRef:
+    id: 222
+    name: case-222
+  caseSpec:
+    name: "vvvv"
+    framwork:
+      general:
+        image: "xxxx"
+  inputs:
+  - {name: dsn, value: mysql://host/db}
+  - {name: sysbench, type: Resource, value: "xxxxx"}
+  timeout: '2h'
+  cancelFlag: true
+status:
+  taskRunRef: 
+    name: "case/case-111-run"
+  active: true
+  completeTime: "2021-09-22T06:24:15Z"
+  startTime: "2021-09-22T06:19:20Z"
+  phase: complete/running/pending
+  complete: success/failure/error/sipped
+  message: "error because of something"
+  taskSpec:
+    inputs:
+    - {name: dsn, type: String, default: "mysql://host/db"}
+    - {name: sysbench, type: Resource}
+    outputs:
+    - {name: logs, type: Artifact, valueFrom: /root/logs/}
+    metadata:
+    implementation:
+      container:
+        image: byrnedo/alpine-curl@sha256:548379d0a4a0c08b9e55d9d87a592b7d35d9ab3037f4936f5ccd09d0b625a342
+        command:
+        - sh
+        - -exc
+        - |
+          url="$0"
+          output_path="$1"
+          curl_options="$2"
+          mkdir -p "$(dirname "$output_path")"
+          curl --get "$url" --output "$output_path" $curl_options
+        - '{{inputs.dsn}}'
+        env:
+        - name: "vvv"
+          value: "xxx"
+  inputs:
+  - {name: dsn, value: mysql://host/db}
+  - {name: sysbench, value: "xxxxx"}
+  outputs:
+  - {name: logs, type: Artifact, s3: 's3://remotepath'}
+  - {name: exitCode, value: "0"}
+  runner:
+    argo:
+      namespace: "testground"
+      workflow: "flow3"
+      templateName: "plan-2344-223"
+      node: null
+      nodeUrl: "balabala"
