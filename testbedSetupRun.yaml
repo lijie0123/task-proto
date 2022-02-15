@@ -1,0 +1,77 @@
+apiVersion: 'api/v2'
+kind: TestbedSetupRun
+metadata:
+  id: 1234
+  createTime: "2021-09-22T06:19:20Z"
+  createdByID: 1234
+  createdBy: "someone@pingcap.com"
+  updateTime: "2021-09-22T06:19:20Z"
+  updateBy: "someone@pingcap.com"
+spec:
+  parent: plan-222-run
+  root: plan-run-xxx
+  testbed:
+    generateName: release-arm64-perftest-sysbench-hybrid-001
+    resourcePool: arm64
+    rmsUrl: ""
+    physicalResourceRequest:
+        cpu: {}
+        memory: {}
+    items:
+        - name: tiup
+          type: WORKLOAD_NODE
+          spec:
+            artifact:
+              artifactPaths:
+                  - /tiup/data/prometheus-9090
+                  - /home/root/.tiup/logs
+            container:
+              image: hub.pingcap.net/qa/base-image
+              imagePullPolicy: Always
+              name: node
+              nodeSelector:
+                  kubernetes.io/hostname: 172.16.6.61
+              resources:
+                  requests: {cpu: '20', memory: 16Gi, storage: 1500Gi}
+              securityContext:
+                  capabilities: {add: [SYS_ADMIN, SYS_PTRACE, NET_ADMIN]}
+              storageClassName: fast-disks
+              volumeMount:
+                  mountPath: /tiup
+    reclaimPolicy:
+        lease: 240h
+        gcStrategy:
+            onFailure:
+                artifact:
+                    monitor: true
+                    log: true
+                reserveEnv:
+                    durationOnWorkingHour: 0h
+                    scaleIn: false
+                    scaleDown: false
+  timeout: '2h'
+  cancelFlag: true
+status:
+  completeTime: "2021-09-22T06:24:15Z"
+  startTime: "2021-09-22T06:19:20Z"
+  phase: complete/running/pending
+  complete: unknown/success/failure/error/skipped
+  message: "error because of something"
+  conditions:
+  - type: lastUnscheduledReason
+    status: "higher priority task exist"
+  - type: phase
+    status: "WaitingForSchedule/Scheduled/Preparing/PrepareBackoff"
+  - type: isSleeping
+    status: "True"
+  testbed:
+    ...
+  outputs:
+  - {name: testbed, value:"something"}
+  runner:
+    argo:
+      namespace: "testground"
+      workflow: "flow3"
+      templateName: "plan-2344-223"
+      node: null
+      nodeUrl: "balabala"
