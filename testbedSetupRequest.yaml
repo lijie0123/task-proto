@@ -48,3 +48,4 @@ spec:
 status:
   scheduleStatus: UnSchedule/Wait/Scheduled/Refused
   lastUnscheduledReason: "insufficient resource: requested {cpu:234}, resource pool left {cpu: 123}"
+  lastScheduleTime: "2022-02-15T08:66:23Z"

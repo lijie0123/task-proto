@@ -10,7 +10,9 @@ metadata:
 spec:
   parent: plan-222-run
   root: plan-run-xxx
-  testbed:
+  testbedRef: 
+    planID: 5678
+  testbedSpec:
     generateName: release-arm64-perftest-sysbench-hybrid-001
     resourcePool: arm64
     rmsUrl: ""
@@ -64,8 +66,8 @@ status:
     status: "WaitingForSchedule/Scheduled/Preparing/PrepareBackoff"
   - type: isSleeping
     status: "True"
-  testbed:
-    ...
+  - type: currentRequest
+    status: "2347"
   outputs:
   - {name: testbed, value:"something"}
   runner:
