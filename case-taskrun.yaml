@@ -30,7 +30,7 @@ spec:
   - {name: sysbench, type: Resource, value: "xxxxx"}
   timeout: '2h'
 status:
-  completionTime: "2021-09-22T06:24:15Z"
+  completeTime: "2021-09-22T06:24:15Z"
   startTime: "2021-09-22T06:19:20Z"
   stopFlag: true
   phase: complete/running/pending

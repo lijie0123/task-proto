@@ -1,16 +1,15 @@
 apiVersion: 'api/v2'
-kind: TestbedSetupRun
+kind: TestbedSetup
 metadata:
   id: 1234
   createTime: "2021-09-22T06:19:20Z"
-  createdByID: 1234
-  createdBy: "someone@pingcap.com"
+  createdBy: someone@pingcap.com
   updateTime: "2021-09-22T06:19:20Z"
-  updateBy: "someone@pingcap.com"
+  updateBy: someone@pingcap.com
 spec:
-  parent: plan-222-run
-  root: plan-run-xxx
-  testbedRef: 
+  parent: 
+    planRunID: 222
+  testbedRef:
     planID: 5678
   testbedSpec:
     generateName: release-arm64-perftest-sysbench-hybrid-001
@@ -52,25 +51,33 @@ spec:
                     scaleIn: false
                     scaleDown: false
   timeout: '2h'
-  cancelFlag: true
-status:
-  completeTime: "2021-09-22T06:24:15Z"
-  startTime: "2021-09-22T06:19:20Z"
-  phase: complete/running/pending
-  complete: unknown/success/failure/error/skipped
-  message: "error because of something"
-  conditions:
-  - type: lastUnscheduledReason
-    status: "higher priority task exist"
-  - type: phase
-    status: "WaitingForSchedule/Scheduled/Preparing/PrepareBackoff"
-  - type: isSleeping
-    status: "True"
-  - type: currentRequest
-    status: "2347"
+  priority: 100
   outputs:
-  - {name: testbed, value:"something"}
-  runner:
+  - name: param1
+    valueExpr: '{{testbed.items.tc.tidb.dsn}}'
+status:
+  scheduleStatus: Pending/Approved/Refused
+  scheduleMessage: "insufficient resource: requested {cpu:234}, resource pool 'benchbot' left {cpu: 123}"
+  scheduleTime: "2022-02-15T08:66:23Z"
+  nextScheduleTime: "2022-02-16T09:00:00Z"
+  retryCnt: 3
+  testbedSpec:
+    generateName: release-arm64-perftest-sysbench-hybrid-001
+    resourcePool: arm64
+    rmsUrl: ""
+    physicalResourceRequest:
+        cpu: {}
+        memory: {}
+    items: {}
+  workerStatus: "polling/submmitting/sleeping"
+
+  startTime: "2021-09-22T06:19:20Z"
+  completeTime: "2021-09-22T06:24:15Z"
+  phase: pending/impending/running/success/failure/error/skipped
+  outputs:
+  - name: testbed
+    value: "something"
+  underlying:
     argo:
       namespace: "testground"
       workflow: "flow3"
