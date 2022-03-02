@@ -41,28 +41,10 @@ status:
     scheduleMessage: "insufficient resource: requested {cpu:234}, resource pool 'benchbot' left {cpu: 123}"
     scheduleTime: "2022-02-15T08:66:23Z"
     nextScheduleTime: "2022-02-16T09:00:00Z"
-    testbedSpec: ""
+    testbedSpec: null
   report:
     retryCnt: 3
-    testbedSpec:
-      generateName: release-arm64-perftest-sysbench-hybrid-001
-      resourcePool: arm64
-      rmsUrl: ""
-      items:
-          - name: tiup
-            type: WORKLOAD_NODE
-            spec:
-              container:
-                image: hub.pingcap.net/qa/base-image
-                imagePullPolicy: Always
-                name: node
-      reclaimPolicy:
-          lease: 24h
-          gcStrategy:
-              onFailure:
-                  artifact:
-                      monitor: true
-                      log: true
+    testbedSpec: null
     status: "polling/submmitting/done"
   run:
     startTime: "2021-09-22T06:19:20Z"
