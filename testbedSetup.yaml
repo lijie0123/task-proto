@@ -1,7 +1,7 @@
-apiVersion: 'api/v2'
+apiVersion: 'api/v1'
 kind: TestbedSetup
 metadata:
-  id: 1234
+  id: 1
   createTime: "2021-09-22T06:19:20Z"
   createdBy: someone@pingcap.com
   updateTime: "2021-09-22T06:19:20Z"
