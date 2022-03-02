@@ -15,72 +15,68 @@ spec:
     generateName: release-arm64-perftest-sysbench-hybrid-001
     resourcePool: arm64
     rmsUrl: ""
-    physicalResourceRequest:
-        cpu: {}
-        memory: {}
     items:
         - name: tiup
           type: WORKLOAD_NODE
           spec:
-            artifact:
-              artifactPaths:
-                  - /tiup/data/prometheus-9090
-                  - /home/root/.tiup/logs
             container:
               image: hub.pingcap.net/qa/base-image
               imagePullPolicy: Always
               name: node
-              nodeSelector:
-                  kubernetes.io/hostname: 172.16.6.61
-              resources:
-                  requests: {cpu: '20', memory: 16Gi, storage: 1500Gi}
-              securityContext:
-                  capabilities: {add: [SYS_ADMIN, SYS_PTRACE, NET_ADMIN]}
-              storageClassName: fast-disks
-              volumeMount:
-                  mountPath: /tiup
     reclaimPolicy:
-        lease: 240h
+        lease: 24h
         gcStrategy:
             onFailure:
                 artifact:
                     monitor: true
                     log: true
-                reserveEnv:
-                    durationOnWorkingHour: 0h
-                    scaleIn: false
-                    scaleDown: false
   timeout: '2h'
   priority: 100
   outputs:
   - name: param1
     valueExpr: '{{testbed.items.tc.tidb.dsn}}'
 status:
-  scheduleStatus: Pending/Approved/Refused
-  scheduleMessage: "insufficient resource: requested {cpu:234}, resource pool 'benchbot' left {cpu: 123}"
-  scheduleTime: "2022-02-15T08:66:23Z"
-  nextScheduleTime: "2022-02-16T09:00:00Z"
-  retryCnt: 3
-  testbedSpec:
-    generateName: release-arm64-perftest-sysbench-hybrid-001
-    resourcePool: arm64
-    rmsUrl: ""
-    physicalResourceRequest:
-        cpu: {}
-        memory: {}
-    items: {}
-  workerStatus: "polling/submmitting/sleeping"
-
-  startTime: "2021-09-22T06:19:20Z"
-  completeTime: "2021-09-22T06:24:15Z"
-  phase: pending/impending/running/success/failure/error/skipped
-  outputs:
-  - name: testbed
-    value: "something"
-  underlying:
-    argo:
-      namespace: "testground"
-      workflow: "flow3"
-      templateName: "plan-2344-223"
-      node: null
-      nodeUrl: "balabala"
+  schedule:
+    scheduleStatus: pending/approved/refused/done
+    scheduleMessage: "insufficient resource: requested {cpu:234}, resource pool 'benchbot' left {cpu: 123}"
+    scheduleTime: "2022-02-15T08:66:23Z"
+    nextScheduleTime: "2022-02-16T09:00:00Z"
+    testbedSpec: ""
+  report:
+    retryCnt: 3
+    testbedSpec:
+      generateName: release-arm64-perftest-sysbench-hybrid-001
+      resourcePool: arm64
+      rmsUrl: ""
+      items:
+          - name: tiup
+            type: WORKLOAD_NODE
+            spec:
+              container:
+                image: hub.pingcap.net/qa/base-image
+                imagePullPolicy: Always
+                name: node
+      reclaimPolicy:
+          lease: 24h
+          gcStrategy:
+              onFailure:
+                  artifact:
+                      monitor: true
+                      log: true
+    status: "polling/submmitting/done"
+  run:
+    startTime: "2021-09-22T06:19:20Z"
+    completeTime: "2021-09-22T06:24:15Z"
+    phase: pending/impending/running/success/failure/error/skipped/omitted
+    outputs:
+    - name: testbed
+      value: "the handle"
+    - name: param1
+      value: "the dsn"
+    underlying:
+      argo:
+        namespace: "testground"
+        workflow: "flow3"
+        templateName: "plan-2344-223"
+        node: ""
+        nodeUrl: ""
