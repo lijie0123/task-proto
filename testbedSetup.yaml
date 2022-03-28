@@ -45,7 +45,7 @@ status:
   report:
     retryCnt: 3
     testbedSpec: null
-    status: "polling/submmitting/done"
+    status: "waitingSchedule/deploying/deploybackoff/success/failed"
   run:
     startTime: "2021-09-22T06:19:20Z"
     completeTime: "2021-09-22T06:24:15Z"
